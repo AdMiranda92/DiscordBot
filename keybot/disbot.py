@@ -15,15 +15,18 @@ def create_access_token(client_id, client_secret, region = 'us'):
     
     return response.json()
 
+
 def main():
+    description = "A Wow Bot to help automate information gathering and handling for guilds"
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
-    GUILD = os.getenv('DISCORD_GUILD')
     # Wow API Access Token Renewal
     ACCESS_TOKEN = create_access_token(os.getenv('WOW_ID'), os.getenv('WOW_SECRET'))
-    bot = CustomClient.CustomBot(GUILD=GUILD, ACCESS_TOKEN=ACCESS_TOKEN['access_token'], command_prefix='!')
+    bot = CustomClient.CustomBot(ACCESS_TOKEN=ACCESS_TOKEN['access_token'], command_prefix='!', description=description)
     bot.run(TOKEN)
 
 
-
-main()
+if __name__ == '__main__':
+    # more setup will be in this section later on
+    # for now, simply call main and let the bot run
+    main()
