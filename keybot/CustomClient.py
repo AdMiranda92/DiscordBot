@@ -1,16 +1,17 @@
 
-import descriptions
+from descriptions import Descriptions as des
 
 import requests
 import random
 import discord
 from discord.ext import commands
 
+
 class CustomBot(commands.Bot):
     
-    def __init__(self, GUILD, ACCESS_TOKEN, **options):
+    def __init__(self, ACCESS_TOKEN, **options):
         super().__init__(**options)
-        self.GUILD = GUILD
+        self.remove_command('help')
         self.add_custom_commands()
         self.ACCESS_TOKEN = ACCESS_TOKEN
         self.default_realm = None
@@ -18,10 +19,8 @@ class CustomBot(commands.Bot):
     async def on_ready(self):
         print('[CONNECTING]...')
         print(f'[CONNECTED]... {self.user} has connected to Discord')
-        
-        guild = discord.utils.get(self.guilds, name=self.GUILD)
-        print(f'{self.user} has CONNECTED to: {guild.name} - id:{guild.id}')
-        # members = [member.name for member in guild.members if member.bot == False]
+
+
     
     def add_custom_commands(self):
         r'''function to add all commands to the bot'''
@@ -67,12 +66,26 @@ class CustomBot(commands.Bot):
 
 
         @self.command(name='setrealm')
-        async def setrealm(ctx, realm=None):
-            if realm is None:
-                await ctx.send('Please speficy a realm to set as default! For example: \"!setdef zuljin\"')
+        @commands.has_any_role('Anger Beard', 'Officer')
+        async def setrealm(ctx, *args):
+            if len(args) == 0:
+                await ctx.send('Please speficy a realm to set as default! For example: \"!setrealm zuljin\"')
                 return
             try:
-                self.default_realm = realm
-                await ctx.send(f'Default realm has been set to {realm}!')
+                self.default_realm = args[0]
+                await ctx.send(f'Default realm has been set to {args[0]}!')
             except:
                 pass
+        
+        @self.command(name='help')
+        async def help(ctx):
+            embed = discord.Embed(
+                colour = discord.Colour.teal()
+                )
+            
+            embed.set_author(name='What I Can Do')
+            embed.add_field(name='!keys', value=des.keys_command, inline=False)
+            embed.add_field(name='!snitch', value=des.snitch_command, inline=False)
+            embed.add_field(name='!setrealm', value=des.setrealm_command, inline=False)
+
+            await ctx.send(embed=embed)
